@@ -4,18 +4,12 @@
  */
 package universitymanagementsystem;
 
-import java.io.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Scanner;
 
 public class University {
-    private String uniID;
-    private String uniName;
-    private String location;
-    private String email;
-    private String contactNo;
-
-    private static final List<University> universities = new ArrayList<>();
-    private static final String FILE_NAME = "universities.txt";
+    private String uniID, uniName, location, email, contactNo;
 
     public University(String uniID, String uniName, String location, String email, String contactNo) {
         this.uniID = uniID;
@@ -31,139 +25,25 @@ public class University {
     public String getEmail() { return email; }
     public String getContactNo() { return contactNo; }
 
-    public void setUniID(String uniID) { this.uniID = uniID; }
-    public void setUniName(String uniName) { this.uniName = uniName; }
-    public void setLocation(String location) { this.location = location; }
-    public void setEmail(String email) { this.email = email; }
-    public void setContactNo(String contactNo) { this.contactNo = contactNo; }
-
     public void displayInfo() {
-        System.out.println("\n----------------------------");
-        System.out.println("University ID: " + uniID);
-        System.out.println("University Name: " + uniName);
-        System.out.println("Location: " + location);
-        System.out.println("Email: " + email);
-        System.out.println("Contact No: " + contactNo);
-        System.out.println("----------------------------");
+        System.out.println(uniID + " | " + uniName + " | " + location);
     }
 
+    // Console Menu Method
     public static void universityMenu() {
         Scanner sc = new Scanner(System.in);
-        loadFromFile();
-
-        while (true) {
-            System.out.println("\n=== UNIVERSITY MENU ===");
-            System.out.println("1. Add University");
-            System.out.println("2. View All Universities");
-            System.out.println("3. Search University");
-            System.out.println("4. Delete University");
-            System.out.println("5. Back to Main Menu");
-            System.out.print("Enter your choice: ");
-
-            int choice = sc.nextInt();
-            sc.nextLine();
-
-            switch (choice) {
-                case 1 -> addUniversity(sc);
-                case 2 -> displayAll();
-                case 3 -> searchUniversity(sc);
-                case 4 -> deleteUniversity(sc);
-                case 5 -> {
-                    saveToFile();
-                    return;
-                }
-                default -> System.out.println("Invalid choice!");
+        System.out.println("1. Add Uni  2. View All");
+        int choice = sc.nextInt(); sc.nextLine();
+        
+        try {
+            if (choice == 1) {
+                System.out.print("ID: "); String id = sc.nextLine();
+                System.out.print("Name: "); String name = sc.nextLine();
+                DBManager.saveUniversity(new University(id, name, "N/A", "N/A", "N/A"));
+                System.out.println("Saved to DB!");
+            } else if (choice == 2) {
+                for (University u : DBManager.loadAllUniversities()) u.displayInfo();
             }
-        }
-    }
-
-    private static void addUniversity(Scanner sc) {
-        System.out.print("Enter University ID: ");
-        String id = sc.nextLine();
-        System.out.print("Enter University Name: ");
-        String name = sc.nextLine();
-        System.out.print("Enter Location: ");
-        String location = sc.nextLine();
-        System.out.print("Enter Email: ");
-        String email = sc.nextLine();
-        System.out.print("Enter Contact No: ");
-        String contactNo = sc.nextLine();
-
-        universities.add(new University(id, name, location, email, contactNo));
-        saveToFile();
-        System.out.println("University added and saved successfully!");
-    }
-
-    private static void displayAll() {
-        if (universities.isEmpty()) {
-            System.out.println("No universities found!");
-            return;
-        }
-        for (University u : universities)
-            u.displayInfo();
-    }
-
-    private static void searchUniversity(Scanner sc) {
-        System.out.print("Enter University Name: ");
-        String name = sc.nextLine();
-
-        for (University u : universities) {
-            if (u.getUniName().equalsIgnoreCase(name)) {
-                System.out.println("University found:");
-                u.displayInfo();
-                return;
-            }
-        }
-        System.out.println("University not found!");
-    }
-
-    private static void deleteUniversity(Scanner sc) {
-        System.out.print("Enter University Name to delete: ");
-        String name = sc.nextLine();
-
-        University found = null;
-        for (University u : universities) {
-            if (u.getUniName().equalsIgnoreCase(name)) {
-                found = u;
-                break;
-            }
-        }
-
-        if (found == null) {
-            System.out.println("University not found!");
-            return;
-        }
-
-        universities.remove(found);
-        saveToFile();
-        System.out.println("University deleted successfully!");
-    }
-
-    private static void saveToFile() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
-            for (University u : universities) {
-                bw.write(u.uniID + "," + u.uniName + "," + u.location + "," + u.email + "," + u.contactNo);
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            System.out.println("Error saving file: " + e.getMessage());
-        }
-    }
-
-    private static void loadFromFile() {
-        File file = new File(FILE_NAME);
-        if (!file.exists()) return;
-
-        universities.clear();
-        try (Scanner fsc = new Scanner(file)) {
-            while (fsc.hasNextLine()) {
-                String[] data = fsc.nextLine().split(",");
-                if (data.length == 5) {
-                    universities.add(new University(data[0], data[1], data[2], data[3], data[4]));
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error loading file: " + e.getMessage());
-        }
+        } catch (SQLException e) { System.out.println("DB Error: " + e.getMessage()); }
     }
 }

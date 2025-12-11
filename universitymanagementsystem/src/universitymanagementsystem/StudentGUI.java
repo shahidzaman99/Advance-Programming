@@ -9,145 +9,77 @@
  */
 package universitymanagementsystem;
 
+
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
 
 public class StudentGUI extends JFrame {
-
-    private JTextField universityField, departmentField, nameField, rollField, semesterField, gpaField, cgpaField;
+    private JTextField uniIdField, uniNameField, deptField, nameField, rollField, semField, gpaField, cgpaField;
     private JTextArea outputArea;
 
     public StudentGUI() {
-        setTitle("Student Management");
+        setTitle("Student Management (DB)");
         setSize(700, 600);
-        setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        getContentPane().setBackground(new Color(240, 240, 240));
 
-        Font labelFont = new Font("SansSerif", Font.BOLD, 14);
-        Font textFont = new Font("SansSerif", Font.PLAIN, 13);
-        Font buttonFont = new Font("SansSerif", Font.BOLD, 13);
-
-        JPanel inputPanel = new JPanel(new GridLayout(7, 2, 10, 10));
-        inputPanel.setBackground(new Color(224, 235, 255));
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-
-        JLabel uniLabel = new JLabel("University:");
-        uniLabel.setFont(labelFont);
-        inputPanel.add(uniLabel);
-        universityField = new JTextField();
-        universityField.setFont(textFont);
-        inputPanel.add(universityField);
-
-        JLabel deptLabel = new JLabel("Department:");
-        deptLabel.setFont(labelFont);
-        inputPanel.add(deptLabel);
-        departmentField = new JTextField();
-        departmentField.setFont(textFont);
-        inputPanel.add(departmentField);
-
-        JLabel nameLabel = new JLabel("Name:");
-        nameLabel.setFont(labelFont);
-        inputPanel.add(nameLabel);
-        nameField = new JTextField();
-        nameField.setFont(textFont);
-        inputPanel.add(nameField);
-
-        JLabel rollLabel = new JLabel("Roll No:");
-        rollLabel.setFont(labelFont);
-        inputPanel.add(rollLabel);
-        rollField = new JTextField();
-        rollField.setFont(textFont);
-        inputPanel.add(rollField);
-
-        JLabel semLabel = new JLabel("Semester:");
-        semLabel.setFont(labelFont);
-        inputPanel.add(semLabel);
-        semesterField = new JTextField();
-        semesterField.setFont(textFont);
-        inputPanel.add(semesterField);
-
-        JLabel gpaLabel = new JLabel("GPA:");
-        gpaLabel.setFont(labelFont);
-        inputPanel.add(gpaLabel);
-        gpaField = new JTextField();
-        gpaField.setFont(textFont);
-        inputPanel.add(gpaField);
-
-        JLabel cgpaLabel = new JLabel("CGPA:");
-        cgpaLabel.setFont(labelFont);
-        inputPanel.add(cgpaLabel);
-        cgpaField = new JTextField();
-        cgpaField.setFont(textFont);
-        inputPanel.add(cgpaField);
-
+        JPanel inputPanel = new JPanel(new GridLayout(8, 2));
+        inputPanel.add(new JLabel("University ID (Required):")); uniIdField = new JTextField(); inputPanel.add(uniIdField);
+        inputPanel.add(new JLabel("University Name:")); uniNameField = new JTextField(); inputPanel.add(uniNameField);
+        inputPanel.add(new JLabel("Department:")); deptField = new JTextField(); inputPanel.add(deptField);
+        inputPanel.add(new JLabel("Student Name:")); nameField = new JTextField(); inputPanel.add(nameField);
+        inputPanel.add(new JLabel("Roll No:")); rollField = new JTextField(); inputPanel.add(rollField);
+        inputPanel.add(new JLabel("Semester:")); semField = new JTextField(); inputPanel.add(semField);
+        inputPanel.add(new JLabel("GPA:")); gpaField = new JTextField(); inputPanel.add(gpaField);
+        inputPanel.add(new JLabel("CGPA:")); cgpaField = new JTextField(); inputPanel.add(cgpaField);
         add(inputPanel, BorderLayout.NORTH);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        buttonPanel.setBackground(new Color(240, 240, 240));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        JPanel btnPanel = new JPanel();
+        JButton addBtn = new JButton("Add/Update");
+        JButton viewBtn = new JButton("View All");
+        btnPanel.add(addBtn); btnPanel.add(viewBtn);
+        add(btnPanel, BorderLayout.CENTER);
 
-        JButton addButton = new JButton("Add Student");
-        addButton.setFont(buttonFont);
-        addButton.setBackground(new Color(0, 120, 215));
-        addButton.setForeground(Color.WHITE);
-
-        JButton viewButton = new JButton("View Students");
-        viewButton.setFont(buttonFont);
-        viewButton.setBackground(new Color(46, 139, 87));
-        viewButton.setForeground(Color.WHITE);
-
-        JButton backButton = new JButton("Back");
-        backButton.setFont(buttonFont);
-        backButton.setBackground(new Color(128, 128, 128));
-        backButton.setForeground(Color.WHITE);
-
-        buttonPanel.add(addButton);
-        buttonPanel.add(viewButton);
-        buttonPanel.add(backButton);
-        add(buttonPanel, BorderLayout.CENTER);
-
-        outputArea = new JTextArea(10, 40);
-        outputArea.setFont(textFont);
-        outputArea.setBackground(Color.WHITE);
-        outputArea.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        outputArea = new JTextArea();
         add(new JScrollPane(outputArea), BorderLayout.SOUTH);
 
-        addButton.addActionListener(e -> {
-            String university = universityField.getText();
-            String department = departmentField.getText();
-            String name = nameField.getText();
-            String roll = rollField.getText();
-            String semester = semesterField.getText();
-            String gpa = gpaField.getText();
-            String cgpa = cgpaField.getText();
+        addBtn.addActionListener(e -> {
+            try {
+                int roll = Integer.parseInt(rollField.getText());
+                int sem = semField.getText().isEmpty() ? 1 : Integer.parseInt(semField.getText());
+                float gpa = gpaField.getText().isEmpty() ? 0 : Float.parseFloat(gpaField.getText());
+                float cgpa = cgpaField.getText().isEmpty() ? 0 : Float.parseFloat(cgpaField.getText());
 
-            outputArea.append("Student Added:\n");
-            outputArea.append("University: " + university + "\n");
-            outputArea.append("Department: " + department + "\n");
-            outputArea.append("Name: " + name + "\n");
-            outputArea.append("Roll No: " + roll + "\n");
-            outputArea.append("Semester: " + semester + "\n");
-            outputArea.append("GPA: " + gpa + " | CGPA: " + cgpa + "\n");
-            outputArea.append("--------------------------------------\n");
+                // Create Student Object
+                Student s = new Student(
+                    uniIdField.getText(), uniNameField.getText(), "", "", "", 
+                    deptField.getText(), nameField.getText(), roll
+                );
+                s.setSemester(sem);
+                s.setGpa(gpa);
+                s.setCgpa(cgpa);
 
-            JOptionPane.showMessageDialog(null, "Student added successfully!");
-            universityField.setText("");
-            departmentField.setText("");
-            nameField.setText("");
-            rollField.setText("");
-            semesterField.setText("");
-            gpaField.setText("");
-            cgpaField.setText("");
+                // Save to Database
+                DBManager.saveStudent(s);
+                JOptionPane.showMessageDialog(this, "Student Saved to Database!");
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Please enter valid numbers for Roll, Sem, GPA.");
+            }
         });
 
-        viewButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Displaying all students.");
-            outputArea.append("Viewing all students...\n");
+        viewBtn.addActionListener(e -> {
+            outputArea.setText("");
+            try {
+                for (Student s : DBManager.loadAllStudents()) {
+                    outputArea.append(s.getRollNo() + ": " + s.getName() + " (" + s.getUniName() + ")\n");
+                }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            }
         });
-
-        backButton.addActionListener(e -> dispose());
 
         setVisible(true);
     }
