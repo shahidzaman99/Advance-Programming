@@ -1,0 +1,10 @@
+STUDENT,,,,,,,
+STUDENT,Riphah,CS,Sharaiz Ahmed,57288,5,3.89,3.65
+UNIVERSITY,1,Riphah International University,Islamabad I-14,admin@riphah.edu.pk,111123456
+LOAD
+STUDENT,,,,,,,
+LOAD
+LOAD
+STUDENT,sas,,,,,,
+LOAD
+LOAD
